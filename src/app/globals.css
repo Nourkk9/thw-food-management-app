@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f8fb;
+  --foreground: #1f2937;
+  --thw-navy: #003b79;
+  --thw-sky: #0077c8;
+  --thw-cloud: #ffffff;
+  --thw-ice: #e5e7eb;
+  --thw-steel: #6b7280;
+  --shadow-panel: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-thw-navy: var(--thw-navy);
+  --color-thw-sky: var(--thw-sky);
+  --color-thw-cloud: var(--thw-cloud);
+  --color-thw-ice: var(--thw-ice);
+  --color-thw-steel: var(--thw-steel);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(0, 119, 200, 0.18);
+}
