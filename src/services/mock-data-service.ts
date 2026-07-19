@@ -3,6 +3,10 @@ import {
   dashboardModules,
   dashboardSections,
   materialCategoryFilterOptions,
+  materialShoppingCategoryFilterOptions,
+  materialShoppingItems,
+  materialShoppingStatusFilterOptions,
+  materialShoppingUnitOptions,
   materials,
   materialStatusFilterOptions,
   mealPlanDays,
@@ -19,6 +23,10 @@ import type {
   DashboardMetric,
   MaterialCategoryFilter,
   MaterialItem,
+  MaterialShoppingCategoryFilter,
+  MaterialShoppingItem,
+  MaterialShoppingStatusFilter,
+  MaterialShoppingUnit,
   MaterialStatusFilter,
   MealPlanDay,
   MealPlanView,
@@ -88,4 +96,20 @@ export async function getMealPlanDays(): Promise<MealPlanDay[]> {
 
 export async function getMealPlanViewOptions(): Promise<MealPlanView[]> {
   return mealPlanViewOptions;
+}
+
+export async function getMaterialShoppingItems(): Promise<MaterialShoppingItem[]> {
+  return materialShoppingItems;
+}
+
+export async function getMaterialShoppingCategoryFilterOptions(): Promise<MaterialShoppingCategoryFilter[]> {
+  return materialShoppingCategoryFilterOptions;
+}
+
+export async function getMaterialShoppingStatusFilterOptions(): Promise<MaterialShoppingStatusFilter[]> {
+  return materialShoppingStatusFilterOptions;
+}
+
+export async function getMaterialShoppingUnitOptions(): Promise<MaterialShoppingUnit[]> {
+  return materialShoppingUnitOptions;
 }

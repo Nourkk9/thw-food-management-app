@@ -10,7 +10,7 @@ export default async function DashboardPage() {
       <header className="space-y-3">
         <h1 className="sr-only">THW Verpflegung & Material</h1>
         <p className="max-w-2xl text-sm leading-7 text-thw-steel sm:text-base">
-          Zentrale Übersicht für Rezepte, Lager, Einkauf, Essensplanung, Belege und Personal.
+          Zentrale Übersicht für Rezepte, Lager, Einkauf, Essensplanung, Materialbeschaffung und Personal.
         </p>
       </header>
 

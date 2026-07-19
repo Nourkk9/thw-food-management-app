@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import {
   activityLogEntries as mockActivityLogEntries,
+  materialShoppingItems as mockMaterialShoppingItems,
   materials as mockMaterials,
   mealPlanDays as mockMealPlanDays,
   recipes as mockRecipes,
@@ -13,6 +14,9 @@ import type {
   ActivityLogEntry,
   MaterialDraft,
   MaterialItem,
+  MaterialShoppingItem,
+  MaterialShoppingItemDraft,
+  MaterialShoppingStatus,
   MealPlanDay,
   MealPlanDraft,
   MealPlanSlot,
@@ -40,6 +44,7 @@ type PreviousMealPlanSlot = {
 type AppStore = {
   recipes: Recipe[];
   materials: MaterialItem[];
+  materialShoppingItems: MaterialShoppingItem[];
   shoppingItems: ShoppingItem[];
   mealPlan: MealPlanDay[];
   activityLog: ActivityLogEntry[];
@@ -50,6 +55,10 @@ type AppStore = {
   addMaterial: (values: MaterialDraft) => MaterialItem;
   updateMaterial: (materialId: string, values: MaterialDraft) => void;
   removeMaterial: (materialId: string) => void;
+  addMaterialShoppingItem: (values: MaterialShoppingItemDraft) => MaterialShoppingItem;
+  updateMaterialShoppingItem: (itemId: string, values: MaterialShoppingItemDraft) => void;
+  updateMaterialShoppingItemStatus: (itemId: string, status: MaterialShoppingStatus) => void;
+  removeMaterialShoppingItem: (itemId: string) => void;
   addMealToPlan: (recipeId: string) => MealPlanPlacement | null;
   updateMeal: (values: MealPlanDraft, previousSlot?: PreviousMealPlanSlot) => void;
   removeMeal: (date: string, mealType: MealType) => void;
@@ -80,6 +89,10 @@ function cloneMaterials(): MaterialItem[] {
     ...material,
     categories: [...material.categories],
   }));
+}
+
+function cloneMaterialShoppingItems(): MaterialShoppingItem[] {
+  return mockMaterialShoppingItems.map((item) => ({ ...item }));
 }
 
 function cloneShoppingItems(): ShoppingItem[] {
@@ -172,6 +185,7 @@ function createInitialState() {
   return {
     recipes: cloneRecipes(),
     materials: cloneMaterials(),
+    materialShoppingItems: cloneMaterialShoppingItems(),
     shoppingItems: cloneShoppingItems(),
     mealPlan: cloneMealPlanDays(),
     activityLog: cloneActivityLogEntries(),
@@ -452,6 +466,55 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set((state) => ({
       materials: state.materials.filter((material) => material.id !== materialId),
     }));
+  },
+  addMaterialShoppingItem: (values) => {
+    const nextItem: MaterialShoppingItem = {
+      id: createEntityId(values.name),
+      ...values,
+    };
+
+    set((state) => ({
+      materialShoppingItems: [nextItem, ...state.materialShoppingItems],
+    }));
+
+    get().addActivityLogEntry(`${nextItem.name} zur Material-Einkaufsliste hinzugefügt`);
+    return nextItem;
+  },
+  updateMaterialShoppingItem: (itemId, values) => {
+    set((state) => ({
+      materialShoppingItems: state.materialShoppingItems.map((item) =>
+        item.id === itemId ? { ...item, ...values } : item,
+      ),
+    }));
+
+    get().addActivityLogEntry(`${values.name.trim()} in der Material-Einkaufsliste aktualisiert`);
+  },
+  updateMaterialShoppingItemStatus: (itemId, status) => {
+    let itemName = "Artikel";
+
+    set((state) => ({
+      materialShoppingItems: state.materialShoppingItems.map((item) => {
+        if (item.id !== itemId) {
+          return item;
+        }
+
+        itemName = item.name;
+        return { ...item, status };
+      }),
+    }));
+
+    get().addActivityLogEntry(`${itemName} auf '${status}' gesetzt`);
+  },
+  removeMaterialShoppingItem: (itemId) => {
+    const item = get().materialShoppingItems.find((entry) => entry.id === itemId);
+
+    set((state) => ({
+      materialShoppingItems: state.materialShoppingItems.filter((entry) => entry.id !== itemId),
+    }));
+
+    if (item) {
+      get().addActivityLogEntry(`${item.name} aus der Material-Einkaufsliste entfernt`);
+    }
   },
   addMealToPlan: (recipeId) => {
     const recipe = get().recipes.find((entry) => entry.id === recipeId);

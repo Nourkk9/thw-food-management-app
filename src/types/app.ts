@@ -17,7 +17,7 @@ export type ModuleKey =
   | "material-lager"
   | "einkaufsliste"
   | "essensplan"
-  | "bon-einscannen"
+  | "material-einkaufsliste"
   | "personal";
 
 export type NavItem = {
@@ -176,6 +176,41 @@ export type ActivityLogEntry = {
   message: string;
   createdAt: string;
 };
+
+export type MaterialShoppingCategory =
+  | "Reinigungsmittel"
+  | "Küchenartikel"
+  | "Schutzausrüstung"
+  | "Gas"
+  | "Textilien"
+  | "Sonstiges";
+
+export type MaterialShoppingCategoryFilter = "Alle" | MaterialShoppingCategory;
+
+export type MaterialShoppingStatus = "Offen" | "Wird besorgt" | "Erledigt";
+
+export type MaterialShoppingStatusFilter = "Alle" | MaterialShoppingStatus;
+
+export type MaterialShoppingUnit =
+  | "Stück"
+  | "Packung"
+  | "Liter"
+  | "kg"
+  | "Rolle"
+  | "Paar";
+
+export type MaterialShoppingItem = {
+  id: string;
+  name: string;
+  category: MaterialShoppingCategory;
+  quantity: number;
+  unit: MaterialShoppingUnit;
+  status: MaterialShoppingStatus;
+  responsiblePerson: string;
+  note?: string;
+};
+
+export type MaterialShoppingItemDraft = Omit<MaterialShoppingItem, "id">;
 
 export type UserRole = "Helfer" | "Verwaltung" | "Admin";
 

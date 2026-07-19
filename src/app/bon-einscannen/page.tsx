@@ -1,11 +1,5 @@
-import { PlaceholderPage } from "@/components/dashboard/placeholder-page";
+import { redirect } from "next/navigation";
 
 export default function BonEinscannenPage() {
-  return (
-    <PlaceholderPage
-      title="Bon einscannen"
-      subtitle="Diese Funktion wird später implementiert."
-      placeholderText="Hier wird später das Scannen von Kassenzetteln integriert."
-    />
-  );
+  redirect("/material-einkaufsliste");
 }

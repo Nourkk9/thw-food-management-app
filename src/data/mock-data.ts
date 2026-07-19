@@ -4,6 +4,10 @@ import type {
   DashboardMetric,
   MaterialCategoryFilter,
   MaterialItem,
+  MaterialShoppingCategoryFilter,
+  MaterialShoppingItem,
+  MaterialShoppingStatusFilter,
+  MaterialShoppingUnit,
   MaterialStatusFilter,
   MealPlanDay,
   MealPlanSlot,
@@ -68,9 +72,9 @@ export const navigationItems: NavItem[] = [
     icon: "mealplan",
   },
   {
-    title: "Bon einscannen",
-    href: "/bon-einscannen",
-    description: "Digitale Erfassung von Kassenbelegen",
+    title: "Material-Einkaufsliste",
+    href: "/material-einkaufsliste",
+    description: "Verbrauchsmaterial und Ausrüstung für den Einsatz",
     icon: "receipt",
   },
   {
@@ -300,6 +304,110 @@ export const shoppingItems: ShoppingItem[] = [
     source: "Manuell",
     manualQuantity: 2,
     generatedQuantity: 0,
+  },
+];
+
+export const materialShoppingCategoryFilterOptions: MaterialShoppingCategoryFilter[] = [
+  "Alle",
+  "Reinigungsmittel",
+  "Küchenartikel",
+  "Schutzausrüstung",
+  "Gas",
+  "Textilien",
+  "Sonstiges",
+];
+
+export const materialShoppingStatusFilterOptions: MaterialShoppingStatusFilter[] = [
+  "Alle",
+  "Offen",
+  "Wird besorgt",
+  "Erledigt",
+];
+
+export const materialShoppingUnitOptions: MaterialShoppingUnit[] = [
+  "Stück",
+  "Packung",
+  "Liter",
+  "kg",
+  "Rolle",
+  "Paar",
+];
+
+export const materialShoppingItems: MaterialShoppingItem[] = [
+  {
+    id: "reinigungsmittel-allzweck",
+    name: "Allzweckreiniger",
+    category: "Reinigungsmittel",
+    quantity: 5,
+    unit: "Packung",
+    status: "Offen",
+    responsiblePerson: "Max Mustermann",
+    note: "Für Küche und Sanitäranlagen",
+  },
+  {
+    id: "kuechenrollen",
+    name: "Küchenrollen",
+    category: "Küchenartikel",
+    quantity: 20,
+    unit: "Rolle",
+    status: "Wird besorgt",
+    responsiblePerson: "Anna Schmidt",
+  },
+  {
+    id: "einweghandschuhe",
+    name: "Einweghandschuhe",
+    category: "Schutzausrüstung",
+    quantity: 3,
+    unit: "Packung",
+    status: "Offen",
+    responsiblePerson: "Klaus Weber",
+    note: "Größe M und L benötigt",
+  },
+  {
+    id: "muellbeutel",
+    name: "Müllbeutel",
+    category: "Sonstiges",
+    quantity: 2,
+    unit: "Packung",
+    status: "Erledigt",
+    responsiblePerson: "Anna Schmidt",
+  },
+  {
+    id: "gas-kartuschen",
+    name: "Gaskartuschen",
+    category: "Gas",
+    quantity: 10,
+    unit: "Stück",
+    status: "Offen",
+    responsiblePerson: "Max Mustermann",
+    note: "Kompatibel mit Feldkochherd Typ B",
+  },
+  {
+    id: "schwaemme",
+    name: "Spülschwämme",
+    category: "Küchenartikel",
+    quantity: 10,
+    unit: "Stück",
+    status: "Offen",
+    responsiblePerson: "Klaus Weber",
+  },
+  {
+    id: "handtuecher-kueche",
+    name: "Küchenhandtücher",
+    category: "Textilien",
+    quantity: 15,
+    unit: "Stück",
+    status: "Wird besorgt",
+    responsiblePerson: "Anna Schmidt",
+  },
+  {
+    id: "kochkleidung-schutzschuerze",
+    name: "Schutzschürzen",
+    category: "Textilien",
+    quantity: 8,
+    unit: "Stück",
+    status: "Erledigt",
+    responsiblePerson: "Max Mustermann",
   },
 ];
 
@@ -541,27 +649,29 @@ export const modulePages: Record<Exclude<ModuleKey, "dashboard">, ModulePageCont
     ],
     sections: dashboardSections,
   },
-  "bon-einscannen": {
-    title: "Bon einscannen",
+  "material-einkaufsliste": {
+    title: "Material-Einkaufsliste",
     icon: "receipt",
-    intro: "Dieses Modul bleibt vorerst ein einfacher Platzhalter für spätere Belegerfassung.",
-    ctaTitle: "Platzhalter",
-    ctaDescription: "Keine Änderungen an der bestehenden simplen Seite erforderlich.",
+    intro:
+      "Verwalte Verbrauchsmaterial und Ausrüstungsgegenstände für den Einsatz: von Reinigungsmitteln bis hin zu Kochkleidung.",
+    ctaTitle: "Materialien verwalten",
+    ctaDescription:
+      "Behalte Bedarfe, Zuständigkeiten und Beschaffungsstatus im Blick.",
     highlights: [
       {
-        label: "Status",
-        value: "Mock",
-        helper: "Noch keine echte Verarbeitung eingebaut.",
+        label: "Materialien",
+        value: String(materialShoppingItems.length).padStart(2, "0"),
+        helper: "Einträge für Verbrauchsmaterial und Ausrüstung.",
       },
       {
-        label: "Import",
-        value: "Später",
-        helper: "Excel- und Belegimport folgen in einem späteren Schritt.",
+        label: "Kategorien",
+        value: "06",
+        helper: "Reinigungsmittel, Küchenartikel, Schutzausrüstung, Gas, Textilien, Sonstiges.",
       },
       {
-        label: "Scope",
-        value: "Klein",
-        helper: "Unverändert als Placeholder belassen.",
+        label: "Statusstufen",
+        value: "03",
+        helper: "Offen, Wird besorgt und Erledigt.",
       },
     ],
     sections: dashboardSections,
