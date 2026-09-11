@@ -2,6 +2,10 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Zentrale Einstellungen der Messung
 const config = {
@@ -10,8 +14,12 @@ const config = {
   spec: "cypress/e2e/material-einkaufsliste.cy.js",
 };
 
-const cypressDir = path.resolve("../cypress");
-const resultsDir = path.resolve("results/cypress");
+const cypressDir = path.resolve(__dirname, "../cypress");
+
+const resultsDir = path.resolve(
+  __dirname,
+  "results/cypress/cypress_official_2026-09-11"
+);
 
 mkdirSync(resultsDir, { recursive: true });
 
