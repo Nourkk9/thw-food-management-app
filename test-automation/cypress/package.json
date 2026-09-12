@@ -12,7 +12,7 @@
   "type": "commonjs",
   "private": true,
   "devDependencies": {
-    "cypress": "^16.0.0"
+    "cypress": "16.0.0"
   },
   "allowScripts": {
     "cypress@16.0.0": true

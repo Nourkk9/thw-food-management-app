@@ -1,5 +1,5 @@
 describe("Material-Einkaufsliste", () => {
-  const testMaterial = "Testmaterial_Automation";
+  const testMaterial = "E2E-Testmaterial";
 
   it("legt ein Material an, ändert dessen Status und entfernt es anschließend", () => {
     // Anwendung öffnen und zur Material-Einkaufsliste navigieren
@@ -12,40 +12,55 @@ describe("Material-Einkaufsliste", () => {
     // Formular öffnen
     cy.contains("button", "Material hinzufügen").click();
 
-    // Testdaten eingeben
+    // Materialname
     cy.contains("label", "Materialname")
+      .parent()
       .find("input")
+      .first()
       .type(testMaterial);
 
+    // Kategorie
     cy.contains("label", "Kategorie")
       .parent()
       .find("select")
-      .select("Reinigungsmittel");
+      .first()
+      .select("Küchenartikel");
 
+    // Zuständige Person
     cy.contains("label", "Zuständige Person")
       .parent()
       .find("input")
+      .first()
       .type("Testperson");
 
+    // Menge
     cy.contains("label", "Menge")
       .parent()
       .find("input")
+      .first()
       .clear()
-      .type("5");
+      .type("2");
 
+    // Einheit
     cy.contains("label", "Einheit")
+      .parent()
       .find("select")
+      .first()
       .select("Stück");
 
+    // Ausgangsstatus prüfen
     cy.contains("label", "Status")
+      .parent()
       .find("select")
-      .find("option:selected")
-      .should("have.text", "Offen");
+      .first()
+      .should("have.value", "Offen");
 
+    // Hinweis
     cy.contains("label", "Hinweis")
       .parent()
       .find("textarea")
-      .type("Automatisierter Test");
+      .first()
+      .type("Automatisierter E2E-Test");
 
     // Material anlegen
     cy.contains("button", "Hinzufügen").click();
@@ -53,24 +68,33 @@ describe("Material-Einkaufsliste", () => {
     // Angelegten Eintrag prüfen
     cy.contains("tr", testMaterial).within(() => {
       cy.contains(testMaterial).should("be.visible");
-      cy.contains("Reinigungsmittel").should("be.visible");
-      cy.contains("5").should("be.visible");
+      cy.contains("Küchenartikel").should("be.visible");
+      cy.contains("2").should("be.visible");
       cy.contains("Stück").should("be.visible");
+      cy.contains("Testperson").should("be.visible");
       cy.contains("Offen").should("be.visible");
     });
 
     // Status ändern
     cy.contains("tr", testMaterial).within(() => {
-      cy.get("select").select("Wird besorgt");
+      cy.get("select")
+        .first()
+        .select("Wird besorgt");
+
       cy.contains("Wird besorgt").should("be.visible");
     });
+
+    // Statusänderung prüfen
+    cy.contains("tr", testMaterial)
+      .contains("Wird besorgt")
+      .should("be.visible");
 
     // Testeintrag löschen
     cy.contains("tr", testMaterial).within(() => {
       cy.contains("button", "Löschen").click();
     });
 
-    // Endzustand prüfen
+    // Löschung prüfen
     cy.contains("tr", testMaterial).should("not.exist");
   });
 });
