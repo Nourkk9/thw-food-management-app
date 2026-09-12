@@ -1,0 +1,78 @@
+﻿name: Cypress CI Failure Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cypress-e2e:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.18.1"
+          cache: npm
+
+      - name: Abhängigkeiten der Anwendung installieren
+        run: npm ci
+
+      - name: Anwendung bauen
+        run: npm run build
+
+      - name: Cypress-Abhängigkeiten installieren
+        working-directory: test-automation/cypress
+        run: npm ci
+
+      - name: Versionen dokumentieren
+        run: |
+          node --version
+          npm --version
+          google-chrome --version
+          cd test-automation/cypress
+          npx cypress --version
+
+      - name: Anwendung starten und Cypress-Test ausführen
+        shell: bash
+        run: |
+          npm start > app-ci.log 2>&1 &
+          APP_PID=$!
+
+          echo "Warte auf http://localhost:3000 ..."
+
+          for i in {1..60}; do
+            if curl -fsS http://localhost:3000 > /dev/null; then
+              echo "Anwendung ist erreichbar."
+              break
+            fi
+            sleep 1
+          done
+
+          curl -fsS http://localhost:3000 > /dev/null
+
+          cd test-automation/cypress
+          npx cypress run \
+            --headless \
+            --browser chrome \
+            --spec cypress/e2e/material-einkaufsliste-debug.cy.js
+
+          TEST_EXIT=$?
+
+          cd ../..
+          kill $APP_PID || true
+
+          exit $TEST_EXIT
+
+      - name: Cypress-Artefakte speichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-ci-failure-artifacts
+          path: |
+            test-automation/cypress/cypress/screenshots
+            app-ci.log
+          if-no-files-found: ignore
+
