@@ -42,3 +42,6 @@ next-env.d.ts
 THW-V2.zip
 
 test-automation/measurement/results/**/*.log
+
+test-automation/playwright/playwright-report/
+test-automation/playwright/test-results/
