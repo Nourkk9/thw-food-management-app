@@ -1,0 +1,84 @@
+﻿name: Cypress Parallel Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cypress-parallel:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        machine: [1, 2]
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.18.1"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            test-automation/cypress/package-lock.json
+
+      - name: Abhängigkeiten der Anwendung installieren
+        run: npm ci
+
+      - name: Anwendung bauen
+        run: npm run build
+
+      - name: Cypress-Abhängigkeiten installieren
+        working-directory: test-automation/cypress
+        run: npm ci
+
+      - name: Versionen dokumentieren
+        run: |
+          node --version
+          npm --version
+          google-chrome --version
+          cd test-automation/cypress
+          npx cypress --version
+
+      - name: Anwendung starten und parallele Cypress-Ausführung starten
+        shell: bash
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        run: |
+          npm start > app-parallel-${{ matrix.machine }}.log 2>&1 &
+          APP_PID=$!
+
+          echo "Machine ${{ matrix.machine }} wartet auf http://localhost:3000 ..."
+
+          for i in {1..60}; do
+            if curl -fsS http://localhost:3000 > /dev/null; then
+              echo "Anwendung ist erreichbar."
+              break
+            fi
+            sleep 1
+          done
+
+          curl -fsS http://localhost:3000 > /dev/null
+
+          cd test-automation/cypress
+
+          set +e
+
+          npx cypress run \
+            --record \
+            --parallel \
+            --browser chrome \
+            --group "parallel-e2e" \
+            --ci-build-id "${{ github.run_id }}" \
+            --spec "cypress/e2e/material-einkaufsliste.cy.js,cypress/e2e/rezepte.cy.js"
+
+          TEST_EXIT=$?
+
+          cd ../..
+          kill $APP_PID || true
+
+          exit $TEST_EXIT
