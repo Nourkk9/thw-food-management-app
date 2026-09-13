@@ -18,7 +18,7 @@ const cypressDir = path.resolve(__dirname, "../cypress");
 
 const resultsDir = path.resolve(
   __dirname,
-  "results/cypress/cypress_official_2026-09-11"
+  "results/cypress/cypress_official_2026-09-12"
 );
 
 mkdirSync(resultsDir, { recursive: true });

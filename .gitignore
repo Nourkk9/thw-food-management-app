@@ -40,3 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 THW-V2.zip
+
+test-automation/measurement/results/**/*.log
