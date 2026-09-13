@@ -1,0 +1,87 @@
+name: Selenium Parallel Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  selenium-parallel:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - test: e2e/material-einkaufsliste.test.js
+            name: material
+          - test: e2e/rezepte.test.js
+            name: rezepte
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.18.1"
+          cache: npm
+
+      - name: Abhängigkeiten der Anwendung installieren
+        run: npm ci
+
+      - name: Anwendung bauen
+        run: npm run build
+
+      - name: Selenium-Abhängigkeiten installieren
+        working-directory: test-automation/selenium
+        run: npm ci
+
+      - name: Versionen dokumentieren
+        run: |
+          node --version
+          npm --version
+          google-chrome --version
+          cd test-automation/selenium
+          node -p "require('selenium-webdriver/package.json').version"
+
+      - name: Anwendung starten und Selenium-Test parallel ausführen
+        shell: bash
+        run: |
+          npm start > app-ci.log 2>&1 &
+          APP_PID=$!
+
+          echo "Warte auf http://localhost:3000 ..."
+
+          for i in {1..60}; do
+            if curl -fsS http://localhost:3000 > /dev/null; then
+              echo "Anwendung ist erreichbar."
+              break
+            fi
+            sleep 1
+          done
+
+          curl -fsS http://localhost:3000 > /dev/null
+
+          cd test-automation/selenium
+
+          set +e
+          node ${{ matrix.test }} > selenium-parallel.log 2>&1
+          TEST_EXIT=$?
+          set -e
+
+          cat selenium-parallel.log
+
+          cd ../..
+          kill $APP_PID || true
+
+          exit $TEST_EXIT
+
+      - name: Selenium-Artefakte speichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-parallel-${{ matrix.name }}
+          path: |
+            test-automation/selenium/selenium-parallel.log
+            app-ci.log
+          if-no-files-found: ignore
