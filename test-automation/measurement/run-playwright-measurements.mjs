@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const config = {
-  runs: 50, // Probe-Lauf; danach auf 50 ändern
+  runs: 50, 
   spec: "e2e/material-einkaufsliste.spec.js",
 };
 
