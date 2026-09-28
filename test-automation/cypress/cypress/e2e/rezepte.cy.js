@@ -21,9 +21,7 @@ describe("Rezepte", () => {
       cy.get("select").eq(0).select("Frühstück");
 
       // Beschreibung
-      cy.get("textarea")
-        .first()
-        .type("Automatisiertes E2E-Testrezept");
+      cy.get("textarea").first().type("Automatisiertes E2E-Testrezept");
 
       // Basis-Personen
       cy.get("input").eq(1).clear().type("10");
@@ -44,9 +42,7 @@ describe("Rezepte", () => {
     });
 
     // Angelegtes Rezept über die Suche eindeutig auswählen
-    cy.get('input[placeholder="Rezept oder Zutat suchen..."]')
-      .clear()
-      .type(testRezept);
+    cy.get('input[placeholder="Rezept oder Zutat suchen..."]').clear().type(testRezept);
 
     // Anlage prüfen
     cy.contains(testRezept).should("be.visible");
@@ -75,9 +71,7 @@ describe("Rezepte", () => {
     });
 
     // Änderung prüfen
-    cy.get('input[placeholder="Rezept oder Zutat suchen..."]')
-      .clear()
-      .type(testRezept);
+    cy.get('input[placeholder="Rezept oder Zutat suchen..."]').clear().type(testRezept);
 
     cy.contains(testRezept).should("be.visible");
     cy.contains("45 Min.").should("be.visible");

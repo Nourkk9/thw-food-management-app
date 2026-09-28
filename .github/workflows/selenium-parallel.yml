@@ -1,16 +1,20 @@
-name: Playwright Parallel Test
+name: Selenium Parallel Test
 
 on:
   workflow_dispatch:
 
 jobs:
-  playwright-parallel:
+  selenium-parallel:
     runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2]
+        include:
+          - test: e2e/material-einkaufsliste.test.js
+            name: material
+          - test: e2e/rezepte.test.js
+            name: rezepte
 
     steps:
       - name: Repository auschecken
@@ -28,8 +32,8 @@ jobs:
       - name: Anwendung bauen
         run: npm run build
 
-      - name: Playwright-Abhängigkeiten installieren
-        working-directory: test-automation/playwright
+      - name: Selenium-Abhängigkeiten installieren
+        working-directory: test-automation/selenium
         run: npm ci
 
       - name: Versionen dokumentieren
@@ -37,10 +41,10 @@ jobs:
           node --version
           npm --version
           google-chrome --version
-          cd test-automation/playwright
-          npx playwright --version
+          cd test-automation/selenium
+          node -p "require('selenium-webdriver/package.json').version"
 
-      - name: Anwendung starten und Playwright-Tests parallel ausführen
+      - name: Anwendung starten und Selenium-Test parallel ausführen
         shell: bash
         run: |
           npm start > app-ci.log 2>&1 &
@@ -58,30 +62,26 @@ jobs:
 
           curl -fsS http://localhost:3000 > /dev/null
 
-          cd test-automation/playwright
+          cd test-automation/selenium
 
           set +e
-          npx playwright test \
-            e2e/material-einkaufsliste.spec.js \
-            e2e/rezepte.spec.js \
-            --shard=${{ matrix.shardIndex }}/2 \
-            --workers=1 \
-            --reporter=line
-
+          node ${{ matrix.test }} > selenium-parallel.log 2>&1
           TEST_EXIT=$?
           set -e
+
+          cat selenium-parallel.log
 
           cd ../..
           kill $APP_PID || true
 
           exit $TEST_EXIT
 
-      - name: Playwright-Artefakte speichern
+      - name: Selenium-Artefakte speichern
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-parallel-${{ matrix.shardIndex }}
+          name: selenium-parallel-${{ matrix.name }}
           path: |
-            test-automation/playwright/test-results
+            test-automation/selenium/selenium-parallel.log
             app-ci.log
           if-no-files-found: ignore
